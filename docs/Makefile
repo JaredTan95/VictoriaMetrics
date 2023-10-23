@@ -22,7 +22,7 @@ docs-up-docker:
 		jekyll/jekyll:3.8 jekyll serve --livereload
 
 # This commands is helpful when you want to convert image to the webp format
-# All images quality set to 20% but it just reduce the size of imageб but not the display quality
+# All images quality set to 20% but it just reduce the size of image, but not the display quality
 
 # To run image convertor just run next command in the terminal
 #
