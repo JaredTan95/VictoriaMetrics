@@ -21,6 +21,17 @@ docs-up-docker:
 		-v $(PWD):/srv/jekyll \
 		jekyll/jekyll:3.8 jekyll serve --livereload
 
+# This commands is helpful when you want to convert image to the webp format
+# All images quality set to 20% but it just reduce the size of imageб but not the display quality
+
+# To run image convertor just run next command in the terminal
+#
+# PATH_TO_IMAGES=path_to_the_images IMAGES_EXTENSION=png make docs-change-images
+#
+# This command will reduce all images with extionsion and folder defined in the command.
+# All images with defined extensions will be removed.
+# After that it is nesessary to update src attribute for image tag
+
 docs-images-to-webp:
 	docker run -it --rm -v \
 		$(PWD)/$(PATH_TO_IMAGES):/data \
