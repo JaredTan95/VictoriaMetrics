@@ -847,6 +847,30 @@ scrape_configs:
   - "Proxy-Auth: top-secret"
 ```
 
+## Disabling on-disk queue
+
+ It's recommended to disable on-disk queue for complicated data pipelines with flag `--remoteWrite.disableOnDiskQueue=true`.
+ vmagent still need a small amount of persistent disk for saving in-memory part of the queue during graceful shutdown.
+ 
+ Most common case for it additional data aggregation with vmagent.
+
+```mermaid
+flowchart LR
+  A[vmagent] --> B(vmagent-aggregation-0)
+  A[vmagent] --> C(vmagent-aggregation-1)
+  B --> D[vmcluster]
+  C --> D[vmcluster]
+```
+
+ Second well-known case replacement on-disk queue with an external solution, like kafka or google pub-sub.
+
+```mermaid
+flowchart LR
+    A[vmagent] --> B(kafka)
+    B <--> C(vmagent)
+    C --> D[vmcluster]
+```
+
 ## Cardinality limiter
 
 By default, `vmagent` doesn't limit the number of time series each scrape target can expose.
