@@ -346,7 +346,13 @@ var (
 	missingRouteRequests     = metrics.NewCounter(`vmauth_http_request_errors_total{reason="missing_route"}`)
 )
 
+var transportCache sync.Map
+
 func getTransport(skipTLSVerification bool) *http.Transport {
+	if v, ok := transportCache.Load(skipTLSVerification); ok {
+		return v.(*http.Transport)
+	}
+
 	tr := http.DefaultTransport.(*http.Transport).Clone()
 	tr.ResponseHeaderTimeout = *responseTimeout
 	// Automatic compression must be disabled in order to fix https://github.com/VictoriaMetrics/VictoriaMetrics/issues/535
@@ -361,6 +367,8 @@ func getTransport(skipTLSVerification bool) *http.Transport {
 		tr.TLSClientConfig = &tls.Config{}
 	}
 	tr.TLSClientConfig.InsecureSkipVerify = skipTLSVerification
+
+	transportCache.Store(skipTLSVerification, tr)
 	return tr
 }
 
