@@ -849,10 +849,13 @@ scrape_configs:
 
 ## Disabling on-disk queue
 
- It's recommended to disable on-disk queue for complicated data pipelines with flag `--remoteWrite.disableOnDiskQueue=true`.
- vmagent still need a small amount of persistent disk for saving in-memory part of the queue during graceful shutdown.
- 
- Most common case for it additional data aggregation with vmagent.
+ On-disk queue aka persistent queue can be partially disabled with flag `--remoteWrite.disableOnDiskQueue=true`.
+ It prevents vmagent from using on-disk buffer for data buffering during ingestion or scraping. 
+ But on-disk buffer is still used for saving in-memory part of the queue during graceful shutdown.
+
+You may want to disable on-disk queue in the following cases:
+ 1) chaining of vmagents. Intermediate vmagents used for aggregation may loss the data, if vmcluster is not accessible. 
+ With disabled persistent queue aggregation vmagents will back-pressure metrics to the first vmagent.
 
 ```mermaid
 flowchart LR
@@ -862,14 +865,15 @@ flowchart LR
   C --> D[vmcluster]
 ```
 
- Second well-known case replacement on-disk queue with an external solution, like kafka or google pub-sub.
+ 2) If you want to replace actual on-disk queue with kafka or other compatible queue. On-disk queue must be disabled at `vmagent-consumer`
 
 ```mermaid
 flowchart LR
     A[vmagent] --> B(kafka)
-    B <--> C(vmagent)
+    B <--> C(vmagent-consumer)
     C --> D[vmcluster]
 ```
+
 
 ## Cardinality limiter
 
